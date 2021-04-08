@@ -1,3 +1,4 @@
+//通过spt算法(shorest processing time短作业优先)可以实现在单机情况下各项进程的完成时间之和最小，这也是一种贪心思想
 #include <stdio.h>
 
 #define N 100
