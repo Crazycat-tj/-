@@ -50,7 +50,7 @@ void edd(int num) {
         Arrange[i].ret = Process[i].ret;
     }
     quick_sort_rj(START, num); //按照到达时间排序
-    
+
     printf("调度完成......\n");
     printf("预期进程方案如下:\n");
     //思路：按照到达时间遍历,模仿每个进程依次到达,每到达一个进程就将当前正在处理的进程挂起，对现有的进程队列进行一次edd调度
@@ -61,7 +61,7 @@ void edd(int num) {
         //注意：此时Possess数组仍是上一次调度的顺序
         if(i>1) {
             int time = Arrange[i].rt - Arrange[i - 1].rt;//距离上一次调度的间隔时间
-            int ltime = Arrange[i-1].rt; //上一次调度的时刻 
+            int ltime = Arrange[i-1].rt; //上一次调度的时刻
             for (int j = 1; j < i; j++) {
                 if (time >= Process[j].ret && Process[j].ret > 0) { //任务 j 执行完成
                     Process[j].ct = ltime + Process[j].ret; //进程 j 的完成时间
@@ -70,13 +70,13 @@ void edd(int num) {
                     Process[j].ret = 0;
                     ltime = Process[j].ct;
                 } else if (time < Process[j].ret && time > 0) {
-                    Process[j].ret-=time; 
+                    Process[j].ret-=time;
                     time = 0;
                 } else if (time <= 0)
                     break;
             }
         }
-        
+
         quick_sort(START, i); //对当前进程队列执行edd,按照最早截止时间调度
         int x = 0;
         for (int j = 1; j <= i; j++) {
@@ -85,24 +85,26 @@ void edd(int num) {
                 printf("%d. 第 %d 号进程\n", x, Process[j].number);
             }
         }
-        
-        printf("***当前已完成进程***\n");
-        x = 0;
-        for (int j = 1; j <= i; j++) {
-            if (Process[j].ret == 0) {
-                x++;
-                printf("%d. 第 %d 号进程,完成时间为第 %d s,截止时间为 %d s,延迟时间为 %d s\n",
-                       x, Process[j].number,Process[j].ct,Process[j].dt,Process[j].lt);
-            }
-        }
+
+//        printf("***当前已完成进程***\n");
+//        x = 0;
+//        for (int j = 1; j <= i; j++) {
+//            if (Process[j].ret == 0) {
+//                x++;
+//                printf("%d. 第 %d 号进程,完成时间为第 %d s,截止时间为 %d s,延迟时间为 %d s\n",
+//                       x, Process[j].number,Process[j].ct,Process[j].dt,Process[j].lt);
+//            }
+//        }
     }
-    
+
     //最后一次调度完成后，让全部进程执行完毕
     int time = Arrange[num].rt;
+    int ltime;
     for(int j = 1;j <= num;j++){
         if(Process[j].ret > 0){
             Process[j].ct = time + Process[j].ret;
-            Process[j].lt = Process[j].ct-Process[j].dt;
+            ltime = Process[j].ct-Process[j].dt;
+            ltime>=0  ? Process[j].lt = ltime:Process[j].lt = 0;
             Process[j].ret = 0;
             time = Process[j].ct;
         }
@@ -160,8 +162,8 @@ void quick_sort(int start, int end) {
 void maxDelay(int num){
     int mdelay = 0;
     for(int i = 1;i <= num;i++){
-        if(Process[i].dt>mdelay)
-            mdelay = Process[i].dt;
+        if(Process[i].lt>mdelay)
+            mdelay = Process[i].lt;
     }
     if(mdelay>0)
         printf("最大延迟时间：%d s",mdelay);
@@ -171,7 +173,7 @@ void maxDelay(int num){
 
 
 // 快速排序,按照到达时间排序
- void quick_sort_rj(int start, int end) {
+void quick_sort_rj(int start, int end) {
     if (start >= end)
         return;
     int mid = Arrange[start].rt; //基准点
